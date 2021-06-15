@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -57,10 +58,26 @@ func createRecord(writer http.ResponseWriter, request *http.Request) {
 	writer.Write([]byte("OK"))
 }
 
-func getRecords(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
-	w.Header().Add("Content-Type", "text/html")
-	w.Write([]byte("<h1>Logger</h1>"))
+func getRecords(writer http.ResponseWriter, request *http.Request) {
+	file, err := os.ReadFile("data/records.json")
+	if err != nil {
+		sendServerError(writer, err)
+	}
+
+	var records []Record
+	if err := json.Unmarshal(file, &records); err != nil {
+		sendServerError(writer, err)
+	}
+
+	writer.WriteHeader(200)
+	writer.Header().Add("Content-Type", "text/html")
+
+	t, err := template.ParseFiles("./request_layout.html")
+	if err != nil {
+		sendServerError(writer, err)
+	}
+
+	t.Execute(writer, records)
 }
 
 func sendServerError(writer http.ResponseWriter, err error) {
