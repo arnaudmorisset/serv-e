@@ -3,13 +3,15 @@
 {{- range $record := . }}
 <hr>
 
-<h2>Headers</h2>
+<h2>Request {{ $record.Id }}</h2>
+
+<h3>Headers</h3>
 
 {{- range $header, $value := $record.Headers }}
 <p><b>{{ $header }}</b>: {{ $value }}</p>
 {{- end }}
 
-<h2>Body</h2>
+<h3>Body</h3>
 
 <p>{{ $record.Body }}</p>
 

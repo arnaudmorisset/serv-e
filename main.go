@@ -8,9 +8,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Record struct {
+	Id      string              `json:"id"`
 	Headers map[string][]string `json:"headers"`
 	Body    string              `json:"body"`
 }
@@ -43,7 +45,10 @@ func createRecord(writer http.ResponseWriter, request *http.Request) {
 		sendServerError(writer, err)
 	}
 
-	records = append(records, Record{Headers: request.Header, Body: string(body)})
+	// NOTE(arnaud):
+	// We want to prepend the new Record to have the most recent ones available at the beginning of the list.
+	record := Record{Id: time.Now().String(), Headers: request.Header, Body: string(body)}
+	records = append([]Record{record}, records...)
 	recordsJSON, err := json.Marshal(records)
 	if err != nil {
 		sendServerError(writer, err)
