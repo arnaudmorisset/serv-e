@@ -1,25 +1,19 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
+	"serv-e/internal"
 	"time"
 )
 
-type Record struct {
-	Id      string              `json:"id"`
-	Headers map[string][]string `json:"headers"`
-	Body    string              `json:"body"`
-}
+var ds internal.InMemoryDataStore
 
 func main() {
 	http.HandleFunc("/", createRecord)
-	http.HandleFunc("/record", createRecord)
 	http.HandleFunc("/records", getRecords)
 
 	fmt.Println("server listening on http://localhost:80")
@@ -35,27 +29,8 @@ func createRecord(writer http.ResponseWriter, request *http.Request) {
 		sendServerError(writer, err)
 	}
 
-	file, err := os.ReadFile("data/records.json")
-	if err != nil {
-		sendServerError(writer, err)
-	}
-
-	var records []Record
-	if err := json.Unmarshal(file, &records); err != nil {
-		sendServerError(writer, err)
-	}
-
-	// We want to prepend the new Record to have the most recent ones available at the beginning of the list.
-	record := Record{Id: time.Now().String(), Headers: request.Header, Body: string(body)}
-	records = append([]Record{record}, records...)
-	recordsJSON, err := json.Marshal(records)
-	if err != nil {
-		sendServerError(writer, err)
-	}
-
-	if err := ioutil.WriteFile("data/records.json", recordsJSON, 0644); err != nil {
-		sendServerError(writer, err)
-	}
+	record := internal.Record{Id: time.Now().Format("15:04:05"), Headers: request.Header, Body: string(body)}
+	ds.InsertRecord(record)
 
 	writer.WriteHeader(200)
 	writer.Header().Add("Content-Type", "text/plain")
@@ -63,15 +38,7 @@ func createRecord(writer http.ResponseWriter, request *http.Request) {
 }
 
 func getRecords(writer http.ResponseWriter, request *http.Request) {
-	file, err := os.ReadFile("data/records.json")
-	if err != nil {
-		sendServerError(writer, err)
-	}
-
-	var records []Record
-	if err := json.Unmarshal(file, &records); err != nil {
-		sendServerError(writer, err)
-	}
+	records := ds.GetRecords()
 
 	writer.WriteHeader(200)
 	writer.Header().Add("Content-Type", "text/html")

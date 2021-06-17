@@ -26,3 +26,19 @@ func TestCreateRecord(t *testing.T) {
 		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
 	}
 }
+
+func TestGetRecords(t *testing.T) {
+	req, err := http.NewRequest("GET", "/records", http.NoBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(createRecord)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: get %v want %v", status, http.StatusOK)
+	}
+}
