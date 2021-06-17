@@ -12,13 +12,13 @@ type Record struct {
 }
 
 type InMemoryDataStore struct {
-	M       sync.Mutex
+	m       sync.Mutex
 	records []Record
 }
 
 func (ds *InMemoryDataStore) InsertRecord(r Record) {
-	ds.M.Lock()
-	defer ds.M.Unlock()
+	ds.m.Lock()
+	defer ds.m.Unlock()
 
 	ds.records = append(ds.records, r)
 }
