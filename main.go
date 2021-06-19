@@ -10,11 +10,8 @@ import (
 func main() {
 	var ds internal.InMemoryDataStore
 
-	createRecordHandler := internal.CreateRecordHandler{Ds: &ds}
-	getRecordsHandler := internal.GetRecordsHandler{Ds: &ds}
-
-	http.HandleFunc("/", createRecordHandler.ServeHTTP)
-	http.HandleFunc("/records", getRecordsHandler.ServeHTTP)
+	http.HandleFunc("/", internal.CreateRecordHandler(&ds))
+	http.HandleFunc("/records", internal.GetRecordsHandler(&ds))
 
 	fmt.Println("server listening on http://localhost:80")
 	if err := http.ListenAndServe(":80", nil); err != nil {
