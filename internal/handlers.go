@@ -1,13 +1,15 @@
 package internal
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 	"net/http"
+	"os"
 	"time"
 )
 
-func CreateRecordHandler(ds *InMemoryDataStore) func(http.ResponseWriter, *http.Request) {
+func CreateRecordHandler(ds *DataStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -25,14 +27,21 @@ func CreateRecordHandler(ds *InMemoryDataStore) func(http.ResponseWriter, *http.
 	}
 }
 
-func GetRecordsHandler(ds *InMemoryDataStore) func(http.ResponseWriter, *http.Request) {
+func GetRecordsHandler(ds *DataStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		records := ds.GetRecords()
 
 		w.WriteHeader(200)
 		w.Header().Add("Content-Type", "text/html")
 
-		t, err := template.ParseFiles("./request_layout.html")
+		templateFile, err := getTemplatePath()
+		if err != nil {
+			w.WriteHeader(500)
+			w.Header().Add("Content-Type", "text/plain")
+			w.Write([]byte(err.Error()))
+		}
+
+		t, err := template.ParseFiles(templateFile)
 		if err != nil {
 			w.WriteHeader(500)
 			w.Header().Add("Content-Type", "text/plain")
@@ -41,4 +50,16 @@ func GetRecordsHandler(ds *InMemoryDataStore) func(http.ResponseWriter, *http.Re
 
 		t.Execute(w, records)
 	}
+}
+
+func getTemplatePath() (string, error) {
+	if _, err := os.Stat("./request_layout.html"); err == nil {
+		return "./request_layout.html", nil
+	}
+
+	if _, err := os.Stat("../request_layout.html"); err == nil {
+		return "../request_layout.html", nil
+	}
+
+	return "", fmt.Errorf("unable to find an HTML layout file")
 }

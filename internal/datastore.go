@@ -11,17 +11,17 @@ type Record struct {
 	Body    string
 }
 
-type InMemoryDataStore struct {
+type DataStore struct {
 	m       sync.Mutex
 	records []Record
 }
 
-func (ds *InMemoryDataStore) InsertRecord(r Record) {
+func (ds *DataStore) InsertRecord(r Record) {
 	ds.m.Lock()
 	defer ds.m.Unlock()
 
 	ds.records = append(ds.records, r)
 }
-func (ds *InMemoryDataStore) GetRecords() []Record {
+func (ds *DataStore) GetRecords() []Record {
 	return ds.records
 }

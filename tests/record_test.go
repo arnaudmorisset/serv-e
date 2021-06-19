@@ -1,4 +1,4 @@
-package main
+package tests
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 )
 
 func TestCreateRecord(t *testing.T) {
-	var ds internal.InMemoryDataStore
+	var ds internal.DataStore
 
 	req, err := http.NewRequest("GET", "/", http.NoBody)
 	if err != nil {
@@ -35,7 +35,7 @@ func TestCreateRecord(t *testing.T) {
 }
 
 func TestGetRecords(t *testing.T) {
-	var ds internal.InMemoryDataStore
+	var ds internal.DataStore
 	ds.InsertRecord(internal.Record{Id: "19:48", Headers: map[string][]string{"foo": {"bar"}}, Body: "OK!"})
 
 	req, err := http.NewRequest("GET", "/records", http.NoBody)

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	var ds internal.InMemoryDataStore
+	var ds internal.DataStore
 
 	http.HandleFunc("/", internal.CreateRecordHandler(&ds))
 	http.HandleFunc("/records", internal.GetRecordsHandler(&ds))
