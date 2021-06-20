@@ -29,10 +29,14 @@ func CreateRecordHandler(ds *DataStore) func(http.ResponseWriter, *http.Request)
 
 func GetRecordsHandler(ds *DataStore) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// We want to get records in reverse order.
+		// This solution come from the official Go wiki.
+		// https://github.com/golang/go/wiki/SliceTricks#reversing
 		records := ds.GetRecords()
-
-		w.WriteHeader(200)
-		w.Header().Add("Content-Type", "text/html")
+		for i := len(records)/2 - 1; i >= 0; i-- {
+			opp := len(records) - 1 - i
+			records[i], records[opp] = records[opp], records[i]
+		}
 
 		templateFile, err := getTemplatePath()
 		if err != nil {
@@ -47,6 +51,9 @@ func GetRecordsHandler(ds *DataStore) func(http.ResponseWriter, *http.Request) {
 			w.Header().Add("Content-Type", "text/plain")
 			w.Write([]byte(err.Error()))
 		}
+
+		w.WriteHeader(200)
+		w.Header().Add("Content-Type", "text/html")
 
 		t.Execute(w, records)
 	}
