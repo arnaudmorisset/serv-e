@@ -35,7 +35,9 @@ go build .
 ## Running serv-e
 
 Running the command without any arguments will spawn a server listening on `localhost:80`.
-You can use `localhost:80/` as a target for your webhooks/callbacks.
-You can use your web browser to reach `localhost:80/records` to display the list of all recorded requests.
+
+`localhost:80/` should be used as a target for your webhooks/callbacks.
+
+`localhost:80/records` should be used to display the list of all recorded requests.
 
 **Keep in mind that records are saved in-memory. Stopping the server will erase all logs.**
