@@ -30,7 +30,15 @@ asdf install
 
 # Build the project
 go build .
-````
+```
+
+## Launch the tests
+
+The tests are in the special folder `tests`, and you have to specify it running them:
+
+```shell
+go test -v ./tests
+```
 
 ## Running serv-e
 
