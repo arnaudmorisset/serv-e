@@ -2,8 +2,8 @@ package internal
 
 import (
 	"net/http"
-	"sync"
 	"reflect"
+	"sync"
 )
 
 type Record struct {
