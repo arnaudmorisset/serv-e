@@ -3,12 +3,17 @@ package internal
 import (
 	"net/http"
 	"sync"
+	"reflect"
 )
 
 type Record struct {
 	Id      string
 	Headers http.Header
 	Body    string
+}
+
+func (r Record) Equals(r2 Record) bool {
+	return r.Id == r2.Id && reflect.DeepEqual(r.Headers, r2.Headers) && r.Body == r2.Body
 }
 
 type DataStore struct {
@@ -22,6 +27,7 @@ func (ds *DataStore) InsertRecord(r Record) {
 
 	ds.records = append(ds.records, r)
 }
+
 func (ds *DataStore) GetRecords() []Record {
 	return ds.records
 }
