@@ -25,8 +25,6 @@ func CreateRecordHandler(ds *DataStore) func(http.ResponseWriter, *http.Request)
 		record := Record{Id: time.Now().Format("15:04:05"), Headers: r.Header, Body: string(body)}
 		ds.InsertRecord(record)
 
-		fmt.Printf("%+v", ds)
-
 		returnCreatedRecordResponse(w)
 	}
 }
@@ -39,19 +37,26 @@ func GetRecordsHandler(ds *DataStore) func(http.ResponseWriter, *http.Request) {
 
 		templateFile, err := getTemplatePath()
 		if err != nil {
+			fmt.Fprintf(os.Stderr, "no template found")
 			returnErrorResponse(w, err)
 			return
 		}
 
 		t, err := template.ParseFiles(templateFile)
 		if err != nil {
-			returnErrorResponse(w, err)
+			fmt.Fprintf(os.Stderr, "cannot parse template: %s", err.Error())
+			returnErrorResponse(w, pkg.ErrCannotParseTemplate)
 			return
 		}
 
-		returnOkResponse(w, "text/html", nil)
+		w.WriteHeader(200)
+		w.Header().Add("Content-Type", "text/html")
 
-		t.Execute(w, records)
+		if err := t.Execute(w, records); err != nil {
+			fmt.Fprintf(os.Stderr, "cannot execute template: %s", err.Error())
+			returnErrorResponse(w, pkg.ErrTemplateExecution)
+			return
+		}
 	}
 }
 

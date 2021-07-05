@@ -46,7 +46,7 @@ func TestGetRecords(t *testing.T) {
 	server := http.HandlerFunc(internal.GetRecordsHandler(&ds))
 	server.ServeHTTP(rr, req)
 
-	if status := rr.Code; status != http.StatusNoContent {
+	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: get %v want %v", status, http.StatusOK)
 	}
 

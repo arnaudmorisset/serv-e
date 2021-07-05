@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"serv-e/internal"
 	"testing"
 )
@@ -80,7 +79,6 @@ func TestRecordEquality(t *testing.T) {
 
 	for i, test := range tests {
 		if test.RecordA.Equals(test.RecordB) != test.Expected {
-			fmt.Printf("%+v / %+v\n", test.RecordA.Equals(test.RecordB), test.Expected)
 			if test.Expected {
 				t.Errorf("error running test %d (%s): expected equality", i, test.Name)
 			} else {
