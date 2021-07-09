@@ -28,12 +28,3 @@ func returnErrorResponse(w http.ResponseWriter, err error) {
 func returnCreatedRecordResponse(w http.ResponseWriter) {
 	formatResponseWriter(w, http.StatusCreated, "text/plain", []byte(OKResponseBodyMessage))
 }
-
-/// format an ok response
-func returnOkResponse(w http.ResponseWriter, contentType string, message []byte) {
-	if len(message) == 0 {
-		formatResponseWriter(w, http.StatusNoContent, contentType, nil)
-		return
-	}
-	formatResponseWriter(w, http.StatusOK, contentType, message)
-}
